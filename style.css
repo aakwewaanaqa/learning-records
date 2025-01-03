@@ -81,6 +81,10 @@ code {
     font-variant-ligatures: inherit;
 }
 
+a, a:visited {
+    color: var(--white);
+}
+
 .separator {
     padding-bottom: var(--padding);
 }
