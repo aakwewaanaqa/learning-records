@@ -1,0 +1,188 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Docker CLI</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<h1>docker container</h1>
+<h2>docker
+    <em class="optional">container</em>
+    run
+    <em class="optional">&lt;選項&gt;</em>
+    &lt;映像檔&gt;
+    <em class="optional">&lt;指令&gt;</em>
+    <em class="optional">&lt;參數&gt;</em></h2>
+<blockquote>
+    這是最常用的指令，用來啟動一個容器。<BR>
+    啟動的是 welcome-to-docker 映像檔，可以自己試試看。<BR>
+    <code>
+        <em class="note"># 在瀏覽器輸入 http://localhost:8080
+            可以連線到這個容器</em><BR>
+        <em class="note"># -p 8080:80 意思是對應 host:8080 到
+            container:80</em><BR>
+        <em class="instruction">docker</em> run -p 8080:80 welcome-to-docker
+    </code>
+    還有執行路徑上的 Dockerfile，加一個點就好。<BR>
+    <code>
+        <em class="instruction">cd</em> ./folder<BR>
+        <em class="instruction">docker</em> run -p 8080:8080 .<BR>
+    </code>
+    <h3>-d</h3>
+    <blockquote>
+        讓容器執行於背景狀態，就不會卡住文字輸入。
+    </blockquote>
+    <h3>-p &lt;主機端&gt;:&lt;容器端&gt;</h3>
+    <blockquote>
+        用於將容器對應到指定端口
+        <code>
+            <em class="instruction">docker</em> run -p 8080:8080 nodejs
+        </code>
+    </blockquote>
+    <h3>-P</h3>
+    <blockquote>
+        用於將容器對應到所有端口
+    </blockquote>
+    <h3>-e &lt;環境變數名稱&gt;=&lt;值&gt;</h3>
+    <blockquote>
+        用於設定環境變數，而且 -e 可以設定多次。<BR>
+        <code>
+            <em class="note"># 設定環境變數 foo = bar</em><BR>
+            <em class="instruction">docker</em>
+            run -e foo=bar postgres env
+        </code>
+        當設定多次時。<BR>
+        <code>
+            <em class="instruction">docker</em>
+            run
+            -e foo=bar
+            -e fun=yes
+            postgres env
+        </code>
+    </blockquote>
+    <h3>-v &lt;體積名稱&gt;:&lt;容器內部路徑&gt;</h3>
+    <blockquote>
+        用於設定體積對應容器內部路經位置。<BR>
+        <code>
+            <em class="instruction">docker</em>
+            run -v log-data:/logs docker/welcome-to-docker
+        </code>
+        也可以用於設定分享本地檔案給容器路徑位置。<BR>
+        <code>
+
+        </code>
+    </blockquote>
+    <h3>--memory="&lt;記憶體量&gt;"</h3>
+    <blockquote>
+        用於設定指定的容器運行時所能夠占用的記憶體量。<BR>
+        <code>
+            <em class="instruction">docker</em>
+            run -e POSTGRES_PASSWORD=secret --memory="512m" --cpus="0.5"
+            postgres
+        </code>
+    </blockquote>
+    <h3>--cpus="&lt;百分比小數點&gt;"</h3>
+    <blockquote>
+        用於設定指定的容器運行時所能夠占用的 CPU 百分比。<BR>
+        <code>
+            <em class="instruction">docker</em>
+            run -e POSTGRES_PASSWORD=secret --memory="512m" --cpus="0.5"
+            postgres
+        </code>
+    </blockquote>
+</blockquote>
+<h2>docker ps</h2>
+<blockquote>
+    列出正在運行的容器。
+</blockquote>
+<h2>docker stop &lt;容器ID&gt;</h2>
+<blockquote>
+    停止正在運行的容器，用容器 ID 來指定，可以輸入 ID 前 3 碼就可以了。<BR>
+    <code>
+        <em class="note"># 剛剛 docker ps 得到的是 83a</em><BR>
+        <em class="instruction">docker</em> stop 83a<BR>
+    </code>
+</blockquote>
+<h2>docker rm &lt;容器ID&gt;</h2>
+<blockquote>
+    移除已經建置、啟用的容器，用容器 ID 來指定，可以輸入 ID 前 3 碼就可以了。<BR>
+    <code>
+        <em class="note"># 剛剛 docker ps 得到的是 83a</em><BR>
+        <em class="instruction">docker</em> stop 83a<BR>
+        <em class="note"># 容器要先停止才能移除</em><BR>
+        <em class="instruction">docker</em> rm 83a<BR>
+    </code>
+</blockquote>
+<h2>docker images</h2>
+<blockquote>
+    列出已經下載的映像檔。<BR>
+    在 Docker Desktop 中其實可以看到已經下載的映像檔了，所以通常也不太用。<BR>
+</blockquote>
+<h2>docker pull &lt;映像檔名稱&gt;</h2>
+<blockquote>
+    下載一個映像檔，但不會啟動容器。<BR>
+    通常在 Dockerfile 中會自己下載，不用我們手動調用。<BR>
+</blockquote>
+
+
+<h1>docker compose</h1>
+<h2>docker compose up -d --build</h2>
+<blockquote>
+    於 CLI 檔案位置上執行 compose.yaml 檔案。<BR>
+    <code>
+        <em class="note"># 先從 git 上複製下一個測試專案</em><BR>
+        <em class="instruction">git</em> clone
+        https://github.com/dockersamples/todo-list-app<BR>
+        <em class="note"># 進到含有 compose.yaml 的路徑中</em><BR>
+        <em class="instruction">cd</em> todo-list-app<BR>
+        <em class="note"># 執行 compose.yaml</em><BR>
+        <em class="instruction">docker</em> compose up -d --build<BR>
+    </code>
+    <div class="note">
+        -d<BR>意思是在背景執行，不會卡住輸入。<BR>
+        --build<BR>意思是建置映像檔。<BR>
+    </div>
+</blockquote>
+<h2>docker compose down --volumes</h2>
+<blockquote>
+    於 CLI 檔案位置上停止 compose.yaml 檔案。<BR>
+    <code>
+        <em class="note"># 拆除 compose.yaml</em><BR>
+        <em class="instruction">docker</em> compose down --volumes
+    </code>
+    <div class="note">
+        --volumes<BR>意思是連同用到的 Volume 存檔空間一起刪除。<BR>
+    </div>
+</blockquote>
+</body>
+<h1>docker network</h1>
+<h2>docker network create &lt;網域名稱&gt;</h2>
+<blockquote>
+    用於建立網域讓指定的容器只能在網域裡面溝通。<BR>
+    <code>
+        <em class="instruction">docker</em>
+        network create my-network<BR>
+        <em class="instruction">docker</em>
+        run -d -p 5432:5432 --network my-network postgres
+    </code>
+</blockquote>
+<h1>docker volume</h1>
+體積是用來永久儲存容器資料的檔案空間，寫入到這個檔案路徑的資料會保存以及共享於容器之間。
+<h2>docker volume create &lt;體積名稱&gt;</h2>
+<blockquote>
+    用於創建體積
+    <code>
+        <em class="note"># 先創造一個容器空間</em><BR>
+        <em class="instruction">docker</em>
+        volume create log-data<BR>
+        <em class="note"># 加載體積 log-data 到 /logs 位置</em><BR>
+        <em class="instruction">docker</em>
+        run -d -p 80:80 -v log-data:/logs docker/welcome-to-docker<BR>
+    </code>
+</blockquote>
+<h2>docker volume ls</h2>
+<blockquote>
+    用於列出所有體積
+</blockquote>
+</html>

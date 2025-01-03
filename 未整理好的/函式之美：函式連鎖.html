@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>函式之美：函式連鎖</title>
+    <link rel="stylesheet" href="book.css">
+</head>
+<body><h1>函式之美：函式連鎖</h1><h2>函式連鎖的範例：LINQ</h2>在 C# 之中就有一個常常使用的範例，就是 LINQ。
+LINQ 很常常在寫對於 <a>IEnumberable&lt;T&gt;</a> 的連續處理。
+以下是一個範例：
+
+<code class="language-csharp">//
+    using System.Linq;
+    var numbers = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    var result = numbers        // { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }
+        .Where(x => x % 2 == 0) // { 2, 4, 6, 8, 10 }
+        .Select(x => x * 2)     // { 4, 8, 12, 16, 20 }
+        .ToList();              // List&lt;int&gt; { 4, 8, 12, 16, 20 }
+</code>
+
+可以這樣使用的原因是，<a>Where</a>、<a>Select</a>
+因為這些方法都會回傳<a>IEnumberable&lt;T&gt;</a>，所以可以連續呼叫。
+也因為這些函式都是接收與輸出相同類型的值。
+
+<code>//  輸入 -> 函式 -> 輸出
+    IEnumerable&lt;T&gt; -> Where -> IEnumerable&lt;T&gt;
+    IEnumerable&lt;T&gt; -> Select -> IEnumerable&lt;T&gt;
+    IEnumerable&lt;T&gt; -> ToList -> List&lt;T&gt;
+</code>
+
+<blockquote><a>IEnumerable&lt;T&gt;</a>是陣列類型的基底類別
+像是 <a>T[]</a>、<a>List&lt;T&gt;</a>、<a>Dictionary&lt;string, T&gt;</a> 都是 <a>IEnumerable&lt;T&gt;</a> 的子類別。
+所以，只要是這些類別的物件，都可以使用 LINQ 的方法。
+</blockquote><h2>函式連鎖的範例：StringBuilder</h2>這是另一個常常使用的範例，就是 <a>StringBuilder</a>。
+用來處理大量的字串連接，用來節省記憶體，會使用的類別。
+這個舉例會更具體，因為<a>StringBuilder</a>的函式就是不斷傳回<a>StringBuilder</a>
+
+<code>//
+    var builder = new StringBuilder(); // ""
+    builder = builder.Append("Hello"); // "Hello"
+    builder = builder.Append(" ");     // "Hello "
+    builder = builder.Append("World"); // "Hello World"
+    builder = builder.Append("!");     // "Hello World!"
+    return builder.ToString();         // "Hello World!"
+</code>
+
+寫成以下縮減版本：
+<code>//
+    var builder = new StringBuilder(); // ""
+        .Append("Hello");              // "Hello"
+        .Append(" ");                  // "Hello "
+        .Append("World");              // "Hello World"
+        .Append("!");                  // "Hello World!"
+    return builder.ToString();         // "Hello World!"
+</code>
+
+再去掉不用宣告的變數：
+<code>//
+    return new StringBuilder(); // ""
+        .Append("Hello");       // "Hello"
+        .Append(" ");           // "Hello "
+        .Append("World");       // "Hello World"
+        .Append("!")            // "Hello World!"
+        .ToString()
+        ;
+</code>
+
+<h2>函式連鎖的範例：自己創造</h2>我們假設要創造一個角色，角色需要一個<a>Builder</a>，
+幫助他穿裝備與技能，這個<a>Builder</a>就是一個函式連鎖的範例。
+注意函式的回傳值。
+<code>//
+    public struct <st>角色Builder</st> {
+        private readonly <cl>角色</cl> 角色 = new <cl>角色</cl>();
+        public <st>角色Builder</st> <mt>穿裝備</mt>(裝備 id) {
+            角色.穿裝備(id);
+            return this;
+        }
+        public <st>角色Builder</st> <mt>穿技能</mt>(技能 id) {
+            角色.技能組合.Add(id);
+            return this;
+        }
+        public <cl>角色</cl> <mt>To角色</mt>() {
+            return 角色;
+        }
+    }
+</code>
+
+用這樣的方式製造<a>Builder</a>就能用連鎖的方式創造角色。
+如此一來你就能得到一個角色，他穿了劍，並且學會了火球與冰箭。
+<code>//
+    return new <st>角色Builder</st>()
+        .<mt>穿裝備</mt>(裝備.劍)
+        .<mt>穿技能</mt>(技能.火球)
+        .<mt>穿技能</mt>(技能.冰箭)
+        .<mt>To角色</mt>();
+</code>
+
+</body>
+</html>

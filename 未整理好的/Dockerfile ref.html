@@ -1,0 +1,228 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Dockerfile</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<h1>Dockerfile</h1>
+預設的專案 Docker 指令檔案，D 要大寫。<BR>
+而且要從 FROM 指示詞開始。
+
+<h1>編譯器提示</h1>
+# 單行註解<BR>
+\ 預設跳脫符號
+
+<h2># escape=&lt;字元&gt;</h2>
+<blockquote>
+    可以對編譯器設定繼續下一行符號：<BR>
+    會失敗的例子<BR>
+    <code class="error">
+        <strong class="instruction">FROM</strong> microsoft/nanoserver<BR>
+        <strong class="instruction">COPY</strong> testfile.txt c:\\<BR>
+        <strong class="instruction">RUN</strong> dir c:\<BR>
+    </code>
+    會成功的例子<BR>
+    <code>
+        <em class="note"># escape=`</em><BR>
+        <strong class="instruction">FROM</strong> microsoft/nanoserver<BR>
+        <strong class="instruction">COPY</strong> testfile.txt c:\<BR>
+        <strong class="instruction">RUN</strong> dir c:\<BR>
+    </code>
+</blockquote>
+
+<h2># check</h2>
+<blockquote>
+    可以對編譯器設定要檢查的項目，與要略過的檢查項目：<BR>
+    所有檢查到的錯誤會忽略，不會停止建置程序，但以下可以改成會停止建置
+    <code>
+        <em class="note"># check=error=true</em>
+    </code>
+</blockquote>
+
+<h2>${variable=&lt;字串&gt;}</h2>
+<blockquote>
+    可以抓取環境變數，並按照規則編譯<BR>
+    用 ENV 宣告：
+    <code>
+        <strong class="instruction">FROM</strong> busybox<BR>
+        <em><strong class="instruction">ENV</strong> FOO=/bar</em><BR>
+        <strong class="instruction">WORKDIR</strong> ${FOO} <em class="note">#
+        WORKDIR /bar</em><BR>
+        <strong class="instruction">ADD</strong> . $FOO <em class="note"># ADD .
+        /bar</em><BR>
+        <strong class="instruction">COPY</strong> \$FOO /quux <em class="note">#
+        COPY $FOO /quux</em><BR>
+    </code>
+    用 ${} 抓取：<BR>
+    如果<em>沒有</em>設定，則會用 = 後邊的值
+    <code>
+        ${name=<em>-</em>etc/nginx/nginx.conf}
+    </code>
+    用 ${} 抓取：<BR>
+    如果<em>有</em>設定，則會用 = 後邊的值
+    <code>
+        ${name=<em>+</em>etc/nginx/nginx.conf}
+    </code>
+    可以在許多指示詞裡面使 ${}
+    <code>
+        <ol>
+            <li><strong class="instruction">ADD</strong></li>
+            <li><strong class="instruction">COPY</strong></li>
+            <li><strong class="instruction">ENV</strong></li>
+            <li><strong class="instruction">EXPOSE</strong></li>
+            <li><strong class="instruction">FROM</strong></li>
+            <li><strong class="instruction">LABEL</strong></li>
+            <li><strong class="instruction">STOPSIGNAL</strong></li>
+            <li><strong class="instruction">USER</strong></li>
+            <li><strong class="instruction">VOLUME</strong></li>
+            <li><strong class="instruction">WORKDIR</strong></li>
+            <li><strong class="instruction">ONBUILD</strong></li>
+        </ol>
+    </code>
+    這些地方使用會有風險，因為會交由 shell 去處理環境變數
+    <code class="warning">
+        <ol>
+            <li><strong class="instruction">RUN</strong></li>
+            <li><strong class="instruction">CMD</strong></li>
+            <li><strong class="instruction">ENTRYPOINT</strong></li>
+        </ol>
+    </code>
+</blockquote>
+
+<h1>層指示詞</h1>
+Dockerfile 中的指示詞分為「層」，一個指示詞會加一層到 container 之上。<BR>
+指示詞會有兩種形式，一種是 exec 形式，一種是 shell 形式。<BR>
+特別注意 exec 形式是主執行續執行 container，shell 形式則是用 shell 另一個執行續執行。<BR>
+所以以 shell 的方式撰寫，會讓 ENTRYPOINT 不能接收 CMD 指示。<BR>
+
+<h2>指示詞 exec 形式</h2>
+<blockquote>
+    要記得用雙引號裝入參數，要記得這是主要執行緒啟動的。<BR>
+    這個 CMD 會把參數傳給 ENTRYPOINT。<BR>
+    <code>
+        <strong class="instruction">CMD</strong>
+        ["&lt;executable&gt;","&lt;param1&gt;","&lt;param2&gt;"]<BR>
+        <strong class="instruction">ENTRYPOINT</strong>
+        ["&lt;executable&gt;","&lt;param1&gt;","&lt;param2&gt;"]
+    </code>
+</blockquote>
+
+<h2>指示詞 shell 形式</h2>
+<blockquote>
+    比較通用，且可以接很多指令一次完成，如果使用逃脫符號的話。<BR>
+    要記得這是 shell 啟動的指令。<BR>
+    這個 CMD 會被 ENTRYPOINT 忽略。<BR>
+    <code class="error">
+        <strong class="instruction">CMD</strong> &lt;command&gt; &lt;param1&gt;
+        &lt;param2&gt;<BR>
+        <strong class="instruction">ENTRYPOINT</strong> &lt;command&gt; &lt;param1&gt;
+        &lt;param2&gt;
+    </code>
+</blockquote>
+
+<h2>CMD</h2>
+<blockquote>
+    container 執行時，可以指定指令的指示詞。<BR>
+    整個 Dockerfile 只能有一個。<BR>
+    以下就是執行 node server.js 開啟伺服器當 container 啟動時。
+    <code>
+        <em class="instruction">CMD</em> ["node", "server.js"]
+    </code>
+    跑的時候就會執行
+    <code>
+        node server.js
+    </code>
+</blockquote>
+
+<h2>ENTRYPOINT</h2>
+<blockquote>
+    container 用於接收當作 exe 執行時 ENTRYPOINT
+    可以指示前面要輸出的指令參數。<BR>
+    先定義好 ENTRYPOINT 前面要有 mysql
+    <code>
+        <em class="instruction">ENTRYPOINT</em> mysql
+    </code>
+    執行 docker run 時投入參數 SELECT * FROM table
+    <code>
+        docker run -t -rm -p 80:80 <b>SELECT * FROM table</b>
+    </code>
+    docker run 執行結果就是使用 shell 執行 mysql SELECT * FROM table
+    <code>
+        mysql SELECT * FROM table
+    </code>
+    同時需要 CMD 與 ENTRYPOINT 時。<BR>
+    一個用 exe 的主執行緒，一個用 shell 開啟另外一個執行緒。<BR>
+    <code>
+        <em class="instruction">CMD</em> node server.js<BR>
+        <em class="instruction">ENTRYPOINT</em> ["mysql"]<BR>
+    </code>
+</blockquote>
+
+<h2>RUN</h2>
+<blockquote>
+    指示詞是用來執行命令，其中的命令會產出新的檔案加到 container 裡面。<BR>
+    在 Dockerfile 中一個指示詞，就是一個層。<BR>
+
+    <h2>--mount=type=&lt;類型&gt;</h2>
+    <ol>
+        <li>
+            加載檔案，執行完畢後不會保留。
+            <code>--mount</code>
+        </li>
+        <li>
+            bind 是將 Host 檔案在 RUN 的執行階段掛載到目錄
+            <code>--mount=type=bind</code>
+        </li>
+        <li>
+            cache 是在 container 裡面建立快取，通常用來放置編譯器、編譯器的包、包管理器的目錄。<BR>
+            因為不需要 go-build 編譯器在 container 裡面，所以可以用快取，編譯完丟棄。
+            <code>--mount=type=cache</code>
+            <code>
+                <strong class="instruction">FROM</strong> golang<BR>
+                <strong class="instruction">RUN</strong>
+                --mount=type=cache,target=/root/.cache/go-build \<BR>
+                go build ...<BR>
+            </code>
+        </li>
+    </ol>
+</blockquote>
+
+<h2>COPY</h2>
+<blockquote>
+    從本機複製檔案到 image 裡面用的指示詞。<BR>
+    <h2>COPY &lt;...本機位置[]&gt; &lt;容器位置&gt;</h2>
+    <code>
+        <em class="note"># COPY &lt;來源1&gt; &lt;來源2&gt;
+            &lt;映像檔目的地&gt;</em><BR>
+        <em class="instruction">COPY</em> file1.txt file2.txt
+        /usr/src/things/<BR>
+    </code>
+    <code>
+        <em class="instruction">COPY</em> nginx.conf /etc/nginx/nginx.conf<BR>
+        <em class="instruction">COPY</em> index.php /var/www/html/index.php
+    </code>
+</blockquote>
+
+<h2>ADD</h2>
+<blockquote>
+    從外部加入檔案到 image 裡面用的指示詞。<BR>
+    與 COPY 不同，ADD 可以使用 url、git、tar、zip、等等。<BR>
+    <h2>ADD &lt;...本機位置[]&gt; &lt;容器位置&gt;</h2>
+    <code>
+        <em class="note"># ADD &lt;來源1&gt; &lt;來源2&gt;
+            &lt;映像檔目的地&gt;</em><BR>
+        <em class="instruction">ADD</em> file1.txt file2.txt
+        /usr/src/things/<BR>
+    </code>
+    可以自行解壓縮、從 git 上下載
+    <code>
+        <em class="instruction">ADD</em> https://example.com/archive.zip
+        /usr/src/things/<BR>
+        <em class="instruction">ADD</em> git@github.com:user/repo.git
+        /usr/src/things/
+    </code>
+</blockquote>
+</body>
+</html>

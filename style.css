@@ -1,0 +1,125 @@
+﻿@import "https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap";
+
+:root {
+    --main-bg-color: #090909;
+    --border-line: #404040;
+    --added-subtile: #202020e0;
+    --added-normal: #707070e0;
+    --added-bright: #aeaeaee0;
+    --minus-dark: #090909;
+    --white: #ffffff;
+    --round-edge: 5px;
+    --padding: 20px;
+    --line-width: 1.5px;
+    --font-family: "Fira Code", monospace;
+
+    --keyword: rgba(255, 172, 77, 0.8);
+    --method: rgba(255, 234, 191, 0.8);
+    --comment: rgba(191, 255, 204, 0.8);
+    --flow: rgba(255, 151, 151, 0.8);
+}
+
+.main {
+    display: block;
+    width: 100%;
+    min-width: 200px;
+    max-width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    z-index: 2;
+}
+
+body {
+    font-family: var(--font-family);
+    color: white;
+    align-content: center;
+    background-color: var(--main-bg-color);
+    letter-spacing: 0.15em;
+}
+
+p {
+    color: var(--added-bright);
+    padding-left: var(--padding);
+    padding-right: var(--padding);
+    white-space: preserve;
+    font-size: smaller;
+}
+
+header {
+    text-align: center;
+    border-bottom-color: var(--border-line);
+    border-bottom-width: var(--line-width);
+    border-bottom-style: solid;
+    padding-bottom: var(--padding);
+    margin-bottom: var(--padding);
+}
+
+h1 {
+    font-size: inherit;
+}
+
+h2 {
+    padding-left: var(--padding);
+    font-weight: normal;
+    font-size: inherit;
+}
+
+code {
+    font-family: var(--font-family);
+    color: inherit;
+    font-size: smaller;
+    margin-top: var(--padding);
+    margin-right: var(--padding);
+    padding: var(--padding);
+    background-color: var(--minus-dark);
+    display: block;
+    border-radius: var(--round-edge);
+    border-color: var(--added-subtile);
+    border-width: var(--line-width);
+    border-style: solid;
+    font-variant-ligatures: inherit;
+}
+
+.separator {
+    padding-bottom: var(--padding);
+}
+
+.note {
+    color: var(--added-normal);
+}
+
+.contents {
+    color: var(--added-bright);
+}
+
+.keypoint {
+    color: var(--white);
+    border-left: 2px solid var(--keyword);
+}
+
+.block {
+    padding-top: var(--padding);
+    padding-bottom: var(--padding);
+    border-radius: var(--round-edge);
+    background-color: var(--added-subtile);
+    backdrop-filter: blur(75px);
+}
+
+.block-header {
+    font-size: x-large;
+    border-bottom-color: var(--border-line);
+    border-bottom-width: var(--line-width);
+    border-bottom-style: solid;
+}
+
+.block-separator {
+    height: var(--line-width);
+    border-bottom-color: var(--border-line);
+    border-bottom-width: var(--line-width);
+    border-bottom-style: solid;
+}
+
+.answer {
+    border-left: 2px solid var(--comment);
+}

@@ -1,0 +1,278 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>結構與類別</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<header class="block-header">
+    <h1>結構與類別</h1>
+    <p class="note">本頁面會細細探討，使用標準類型與類別的差別與一些些微差別。
+但請謹記，不管怎麼使用都是可以的，只要更簡易地理解。</p>
+</header>
+<body>
+<div class="main">
+<div class="block">
+<div class="block-header">
+<h2>快速理解試題</h2><p>試試看你的明白😊</p>
+</div>
+<div class="contents">
+<p>請問，執行 One() 與執行 Two() 的印出結果分別是什麼？
+1. 1, 0
+2. 0, 0
+3. 1, 1
+<code>private void One()
+{
+    int[] array = [1, 2, 3];
+    Change(array);
+    Console.Write(array[0]);
+
+    void Change(int[] a)
+    {
+        a[0] = 0;
+    }
+}</code>
+<code>private void Two()
+{
+    int[] array = [1, 2, 3];
+    array = Change(array);
+    Console.Write(array[0]);
+
+    int[] Change(int[] a)
+    {
+        a[0] = 0;
+        return a;
+    }
+}</code></p>
+<p class="answer">答案是：2. 0, 0
+因為 Array&lt;int&gt;是一個 class，我們知道 class 會使用的是位址，不是數值。
+所以不論在哪一個地方更改其內容，內容的更改都會指向原本的物件。</p>
+<div class="block-separator"></div>
+<p>再問問看，執行 Main() 之後印出的結果是什麼？
+1. Kitty
+2. Tom
+<code>public struct Cat
+{
+    public string name;
+}
+
+public void Main()
+{
+    Cat cat = new Cat();
+    cat.name = "Kitty";
+    Change(cat);
+    Console.Write(cat.name);
+
+    void Change(Cat cat)
+    {
+        cat.name = "Tom";
+    }
+}
+</code>
+<p class="answer">答案是：1. Kitty
+因為 Cat 是一個 struct，我們知道 struct 會使用數值，不是位址。
+所以不論在哪裡，只要進入另一個 Function() {} 之中，它就會被複製一次。
+所以其實在 Change(Cat cat) 中傳入的 cat，是被複製的，不是原物件。
+那就是為何，我們 Vector3 不能直接修改的原因。</p>
+<div class="block-separator"></div>
+<p>再來一問！請問執行 Main() 打印出的結果為何？
+1. 012
+2. 222
+3. 333
+<code>public void Main()
+{
+    Action[] callbacks = new Action[3];
+    for (int i = 0; i < 3; i++)
+    {
+        callbacks[i] = new Action(() => {
+            Console.Write(i);
+        });
+    }
+    foreach (var callback in callbacks)
+    {
+        callback();
+    }
+}
+</code>
+</p>
+<p class="answer">答案是：3. 333
+這是最奇怪也最難的地方，因為 lambda 就是所謂的箭頭函式 () => {}，
+它會參考當下的變數當作位址，所以當 i++ 的時候，它參考的 i 就變了。。
+如果要避免 i 被改變，可以把 i 進行複製：
+<code>public void Main()
+{
+    Action[] callbacks = new Action[3];
+    for (int i = 0; i < 3; i++)
+    {
+        int copy = i;
+        callbacks[i] = new Action(() => {
+            Console.Write(copy);
+        });
+    }
+    foreach (var callback in callbacks)
+    {
+        callback();
+    }
+}
+</code>
+但是你也可以任意讓 i 去更改，寫出不同步的執行效果，
+比如說有等待、延遲、順序的效果等等
+像是以下的 flag 就是故意讓它會變的：
+<code>public class Example : Monobehaviour
+{
+    [SerializeField] private Button btn;
+                     private Action callback;
+
+    void Start()                                       //
+    {                                                  //
+        bool flag = false;                             // 先標記等待
+                                                       //
+        btn.onClick.AddListener(() => {                //
+            flag = true;                               // 讓按鈕可以讓 callback 往下
+        })                                             //
+                                                       //
+        Action callback = new Action(() => {           //
+            if (!flag) return;                         // 等待 flag 為止
+            transform.position = new Vector3(0, 1, 0); //
+            Debug.Log("FINISHED");                     //
+            callback = null;                           // 讓自己不要再做了
+        })                                             //
+    }                                                  //
+                                                       //
+    void Update()                                      //
+    {                                                  //
+        if (callback is not null) callback();          //
+    }                                                  //
+}
+</code>
+</p>
+</div>
+</div>
+<div class="separator"></div>
+<div class="block"><div class="block-header">
+<h2>用 class</h2>
+</div>
+<div class="contents">
+<p class="keypoint">首先是大家熟悉的 class 特性：傳址，不管多大多小，都是傳位址。
+所以用起來也方便，數值更動不會受到限制，適合場景：
+1. 巨大物件
+2. 單例
+3. 易變動性
+4. 代表狀態
+</p>
+<p>所以我們熟悉的 List，就是個 class 就是這個原因
+因為它可大可小，易變動，需要不斷參考。
+以下舉例使用 class 最棒的場景
+<code>public static class LevelStates // 關卡狀態
+{                               //
+    public string levelName;    // 關卡名稱
+    public int    difficulty;   // 難度
+    public bool   isPaused;     // 是否是暫停狀態
+}
+</code>
+</p>
+</div>
+</div>
+<div class="separator"></div>
+<div class="block"><div class="block-header">
+<h2>用 struct</h2>
+</div>
+<p class="keypoint">第二是大家覺得古怪的 struct 特性：傳值，不管多大多小，都會一直複製。
+使用方式嚴格，數值不能動，適合場景：
+1. 計算、數學運算
+2. 參數包裝
+3. 不易變動性
+4. 代表數值
+</p>
+<p>所以我們熟悉的 Vector3，就是 struct，
+因為它不是用來更改當前狀態的，它只是數值。
+比如下列的程式碼：
+<code>public class Example : Monobehaviour
+{
+    void Start()
+    {
+        transform.position.x = 0.5f; // 這是錯誤的
+    }
+}
+</code>
+它會是錯的的原因是因為，
+程式碼 transform.position 拿到的是一個 Vector3 的複製。
+比如以下的狀況：
+<code>public class Car
+{
+    public CarInfo info;     // 車子資訊欄位
+                             //
+    public CarInfo Info      // 車子資訊屬性
+    {                        //
+        get                  //
+        {                    // 進入 get() 就複製一次了
+            return info;     // 回傳複製
+        }                    //
+    }                        //
+                             //
+    public Car(CarInfo info) //
+    {                        //
+        this.info = info;    // 因為參數與欄位一樣
+    }                        // 所以需要一個 this
+
+    public struct CarInfo
+    {
+        private string vendor;
+        private string owner;
+
+        public CarInfo(
+            string vendor,
+            string owner)
+        {
+            this.vendor = vendor;
+            this.owner  = owner;
+        }
+    }
+}
+
+public void Main()
+{
+    Car car = new(new Car.CarInfo // 創造一個 CarInfo
+    {                             //
+        vendor = "mizibishi",     //
+        owner = "john",           //
+    });                           //
+    Car.CarInfo info = car.Info;  // 得到複製體
+}
+</code>
+以下宣告方式也是產生個 struct 的複製體：
+<code>public class Car
+{
+    // 通過 get() 還是會複製一次。。
+    public CarInfo info { get; set; }
+}
+</code>
+不要它被複製來複製去的話，就簡簡單單當成欄位就好：
+<code>public class Car
+{
+    public CarInfo info;
+}
+</code>
+你會想問：「為什麼要限制更改它的欄位呢？」
+因為我們在某些場景中，會希望
+
+1. 變數們是合理且成對的，
+   比如說，【型號】【型號代碼】；或者【人名】【性別】
+
+2. 數值的產生也是合理的
+   比如說，【0 >= 年齡 <= 120】
+
+3. 更改時也是在受到保護的範圍
+   比如說，【SetSex 不能是不男不女】
+
+4. 數值不要受到汙染
+   比如說，【A 腳本改了 C】【C 腳本執行時，數值不能反映狀態】
+   變數會變得不合理不成對
+</p>
+</div>
+</div>
+</div>
+</body>
+<script src="colorize.mjs"></script>
+<script src="mark.mjs"></script>
+</html>

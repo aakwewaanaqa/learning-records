@@ -1,0 +1,155 @@
+﻿<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+<style>
+    body {
+        font-family: "Noto Sans TC", Monospaced, sans-serif;
+        font-weight: 300;
+        line-height: 1.6;
+        margin: 20px;
+    }
+    h1, h2 {
+        color: #333;
+    }
+    code {
+        background-color: #f4f4f4;
+        padding: 5px;
+        border-radius: 5px;
+        display: block;
+        margin: 10px 0;
+        white-space: pre-wrap;
+    }
+    .inline {
+        display: inline;
+    }
+    blockquote {
+        background-color: #f9f9f9;
+        border-left: 10px solid #ccc;
+        margin: 10px 0;
+        padding: 10px;
+        white-space: pre-wrap;
+    }
+    a {
+        background-color: #f4f4f4;
+        padding: 5px;
+        border-radius: 5px;
+        display: inline;
+        margin: 10px 0;
+    }
+</style>
+<body>
+
+<h1>函式之美</h1>
+
+演算法的定義是一個用來解決問題的步驟說明，<BR>
+但它本身可以有很多表達方式。<BR>
+以下是對於「註冊電子信箱」的演算法。<BR>
+<code>
+    如何註冊電子信箱？
+        -> 先想好要甚麼名字
+        -> 到谷歌註冊
+        -> 輸入相關資料
+        -> 註冊成功
+</code>
+
+如果寫成 C# 會怎麼寫？<BR>
+<code>
+    public void 註冊電子信箱()
+    {
+        到谷歌註冊();
+        輸入資料();
+        註冊成功();
+    }
+</code>
+
+可是如果你仔細思考，你就會發現，其實流程並沒有那麼單純。<BR>
+如果信箱的名字已被占用怎麼辦？<BR>
+如果沒有網路怎麼辦？<BR>
+如果不知道相關資料怎麼辦？<BR>
+如果註冊沒有成功呢？<BR>
+我們可能因為這樣加入更多的條件。<BR>
+如果認真寫，很可能會變成以下這樣<BR>
+<code>
+    public void 註冊電子信箱()
+    {
+        var 電腦 = 我.家用電腦;
+        if (家用電腦.沒有網路) {
+            if (手機.網路.還夠用() && 手機.網路.有吃到飽()) {
+                手機.熱點.開 = true;
+                電腦.Wifi = 手機.熱點;
+            }
+            else if (你同學.在家() && 你同學.讓你去()) {
+                var 人 = 我;
+                人.上(人.家.廁所);
+                人.去(人.同學家);
+                電腦 = 人.同學.電腦;
+            }
+            else if (星巴克有開()) {
+                var 人 = 我;
+                人.上廁所();
+                人.去(世界.新巴克);
+                電腦 = 人.筆電;
+            }
+            else 我.腦袋.放棄();
+        }
+
+        電腦.到谷歌註冊();
+
+        var 名字 = 想名字();
+        while (谷歌.名字已被占用(名字)) {
+            if (我.還想得到名字()) 名字 = 想名字();
+            else 我.腦袋.放棄();
+        }
+
+        while (谷歌.沒註冊成功(名字)) 重新填資料();
+
+        谷歌.註冊成功();
+    }
+</code>
+以上展示一個很簡單的演算法。<BR>
+
+<h2>函式連鎖</h2>
+
+函式連鎖是用在物件導向程式設計的一種技巧，<BR>
+技巧是傳回呼叫物件的物件本身來達到連續調用的技巧。<BR>
+這樣可以提升程式碼的簡潔性與可讀性。<BR>
+以下是很一個很常用的函式連鎖的例子：<BR>
+<code>
+    var builder = new StringBuilder();
+    var str     = builder
+        .Append("Hello")
+        .Append(" ")
+        .Append("World")
+        .Append("!")
+        .ToString()
+        ;
+    // str = "Hello World!"
+</code>
+因為<a>Append</a>會傳回<a>StringBuilder</a>本身，所以可以一直連續呼叫。<BR>
+<blockquote>
+    為什麼不直接用<a>$""</a>？
+    因為在某一些常常是製作出字串的過程中，
+    因為字串會產生新的記憶體在做<a>+</a>的過程
+    所以推薦使用<a>StringBuilder</a>來做字串的串接：節省記憶體。
+</blockquote>
+
+<h2>流暢語法</h2>
+
+流暢語法有點類似我們說話時會對一個物體進行描述，<BR>
+以此去撰寫一個物件的狀態。<BR>
+<code>
+    bool 註冊結果 =
+        我.家用電腦
+        .Apply(電腦 =>
+            {
+                電腦.瀏覽器.網站 = 古歌;
+                return 電腦.瀏覽器.網站;
+            })
+        .註冊(信箱)
+        .Apply(結果 =>
+            {
+                if (結果.成功) return true;
+                return false;
+            });
+</code>
+
+
+</body>

@@ -1,0 +1,100 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>函式之美：函式傳遞</title>
+    <link rel="stylesheet" href="book.css">
+</head>
+<body><h1>函式之美：函式傳遞</h1><h2>概念解釋</h2>數學上<a>f(g(x))</a>
+就是先執行函式g之後以函式g的輸出傳遞給函式f作為輸入，再取得值的結果。
+我們把它寫成 C# 會變成一個連續的呼叫。
+<code>//
+var a = g(x);
+var b = f(x);
+return b;
+</code>
+
+這樣簡化所有的宣告就可以寫成
+<code>//
+return f(g(x));
+</code>
+
+由於這種寫法不利於閱讀，如果太長會變得很難懂。
+<code>//
+return f(g(h(i(j(k(l(m(x))))))));
+</code>
+
+或是名稱本身就很長。
+<code>//
+    return GetResultFromDatabase(GetDataFromServer(GetDataFromWeb()));
+</code>
+
+所以我們可以用一些小技巧，來讓程式碼變得更好閱讀。
+這個小技巧就是為我們的函式創造可以連鎖呼叫的方式。
+以下是我們的目標：
+<code>//
+    函式 -> 函式 -> 函式 -> 函式 -> 輸出
+</code>
+
+<h2>定義延伸方法</h2>所以我們就要來實作這個方法。
+在程式語言裡面當作參數傳遞的函式稱作一級函式。
+我們要定義知道我們的一級函式是什麼類別。
+<blockquote>其實這也是在實作<a>LINQ</a>。
+</blockquote>
+假設我們要處理的是字串，我們可以明確知道，我們的函式是<a>F (string) -> string</a>。
+通常在<a>namespace System</a>它叫做<a>Func&lt;string, string&gt;</a>。
+所以我們為<a>Func&lt;string, string&gt;</a>定義延伸方法。
+
+<blockquote>延伸方法是用另一個類別來擴充原本的類別的方式。
+寫法是在方法前面加上<a>this</a>關鍵字，並且在第一個參數的位置寫上<a>類別名稱</a>。
+</blockquote>
+
+<code>//
+public <rd>static</rd> class Exts
+{
+    public <rd>static</rd> string <rd>Pipe</rd>(
+        <rd>this</rd> string a,
+        Func&lt;string, string&gt; f)
+    {
+        return f(a);
+    }
+}
+</code>
+
+<blockquote><a>Pipe</a>的意思是管線，也就是把之前的輸出當成輸入給下一個函式。
+在<a>F#</a>語言之中它被寫成<a>|></a>。
+</blockquote>完成之後我們就可以很自由地呼叫<a>Pipe</a>
+<code>
+public string AddHello(string a) {
+    return a + "Hello";
+}
+public string AddSpace(string a) {
+    return a + " ";
+}
+public string AddWorld(string a) {
+    return a + " World";
+}
+public string AddExclamation(string a) {
+    return a + "!";
+}
+/// 這是我們達到了目標
+public string GetResult() {
+    return "".<rd>Pipe</rd>(AddHello)   // "Hello"
+        .<rd>Pipe</rd>(AddSpace)        // "Hello "
+        .<rd>Pipe</rd>(AddWorld)        // "Hello World"
+        .<rd>Pipe</rd>(AddExclamation); // "Hello World!"
+}
+</code>
+
+在<a>F#</a>裡面會變成這樣的表達
+<code>//
+let GetResult() =
+    ""
+    |> AddHello
+    |> AddSpace
+    |> AddWorld
+    |> AddExclamation
+</code>
+
+</body>
+</html>

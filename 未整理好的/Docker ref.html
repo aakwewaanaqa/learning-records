@@ -1,0 +1,90 @@
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Docker 學習短記</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<h1>Docker 是什麼？</h1>
+<p>
+    Docker 是一個平台，其包含 Hub、客戶端指令 CLI、桌面應用程式
+    EXE，是用來減少開發到部屬時的工作時間。<BR>
+    需要學習它的 CLI 指令、Dockerfile 語法、compose.yaml 語法，以完成部屬作業。<BR>
+    但其中有許多的範例可以參考、技術文件也完整，所以學習起來不難。<BR>
+</p>
+<h2>核心概念</h2>
+<ol>
+    <li>
+        <h3>Container</h3>
+        <p>
+            稱作<b>「容器」</b>，是一個獨立的作業程序，是 Image 建置後的產物。<BR>
+            它是獨立的、隔絕的、自我乘載的、可移動的。<BR>
+        </p>
+        <blockquote class="note">
+            關於虛擬機與容器的比較：<BR>
+            虛擬機是另一個完整的作業環境，容器只是一個獨立的作業程序。<BR>
+        </blockquote>
+    </li>
+    <li>
+        <h3>Image</h3>
+        <p>
+            稱作<b>「映像檔」</b>，就是可以成為容器的模板。<BR>
+            映像檔是許多已經被標準化準備啟用的模板，是由許多提供功能的社群、官方維護。<BR>
+            它是唯獨不可修改、由許多層級組成，層級寫在 Dockerfile 中。<BR>
+        </p>
+    </li>
+    <li>
+        <h3>Docker CLI</h3>
+        <p>
+            是 Docker 在我們電腦上能夠執行指令的程式。<BR>
+        </p>
+        <code>
+            <em class="note"># 常用的是：</em><BR>
+            docker run <em class="note"># 用來執行 Dockerfile</em><BR>
+            docker compose up --build <em class="note"># 用來執行
+            compose.yaml</em><BR>
+        </code>
+    </li>
+    <li>
+        <h3>Host</h3>
+        <p>
+            就是本機，執行 Docker CLI 的環境、用網路抓取 Image 的環境。<BR>
+        </p>
+        <blockquote class="note">
+            所以建置過程需要有網路😂<BR>
+            不要忘記要連上網路。<BR>
+        </blockquote>
+    </li>
+    <li>
+        <h3>compose.yaml</h3>
+        <p>
+            用來設定多個 Container 之間的關係。<BR>
+        </p>
+    </li>
+    <li>
+        <h3>Dockerfile</h3>
+        <p>
+            Image 中指示要增加層級的檔案。<BR>
+        </p>
+    </li>
+</ol>
+
+<h2>架構關係</h2>
+compose.yaml ➡️ Dockerfile<BR>
+Dockerfile ➡️ Docker CLI<BR>
+Docker CLI ➡️ 本機網路 ➡️ Docker Hub ➡️ Image<BR>
+Image ➡️ Container<BR>
+
+<h2>其他文件</h2>
+<ol>
+    <li>
+        <a href="Dockerfile%20ref.html">Dockerfile</a>
+    </li>
+    <li>
+        <a href="dockerignore.html">.dockerignore</a>
+    </li>
+</ol>
+
+</body>
+</html>
