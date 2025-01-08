@@ -30,6 +30,10 @@
     z-index: 2;
 }
 
+br {
+    display: none;
+}
+
 body {
     font-family: var(--font-family);
     color: white;

@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>異步程式碼的時間魔術</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="block-header">
+    <h1>異步程式碼的時間魔術</h1>
+    <p class="note">
+        因為時間差的關係，避免在函式之間跳來跳去撰寫，採用異步的撰寫方式會方便很多。</p>
+</header>
+<div class="main">
+    <div class="block">
+        <div class="block-header">
+            <h2>快速理解試題</h2><p>試試看你的明白😊</p>
+        </div>
+        <div class="contents"><p>已知關鍵字 await 是等待函式執行，
+而 Forget() 則是不等待。
+請問執行 Main() 函式，會印出怎麼樣的結果呢？
+1. 2
+2. 12
+3. 21
+4. 1
+<code>public async UniTask Main()
+{
+    One().Forget();
+    Two().Forget();
+
+    async UniTask One()
+    {
+        await UniTask.Delay(1000);
+        Debug.Log(1);
+    }
+
+    async UniTask Two()
+    {
+        await UniTask.Delay(500);
+        Debug.Log(2);
+    }
+}</code></p><p class="answer">答案是：3. 21
+因為 Forget() 是不等待 UniTask 繼續往下執行，
+而 await 則是標準的 C# 等待後執行。
+又因為 Two() 中 Delay(500) 只有 0.5 秒鐘，
+所以比 One() 中 Delay(1000) 還要快執行。</p>
+        </div>
+    </div>
+</div>
+<script src="colorize.mjs"></script>
+<script src="mark.mjs"></script>
+</body>
+</html>
