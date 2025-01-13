@@ -1,0 +1,165 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>階級制度的 MVC</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="block-header">
+<h1>階級制度的 MVC</h1>
+<p class="note">MVC 是一個很重要的觀念，
+用來分開：「邏輯、顯示、資料」的架構，
+以利「更新、協作、測試」。</p>
+</header>
+<div class="main">
+<div class="block">
+<div class="block-header">
+<h2>測試你的明白！</h2>
+</div>
+<div class="contents">
+<p>請問，MVC 是一個程式語言嗎？
+1. 是
+2. 否
+</p>
+<p>    
+請問，MVC 的目的是為了一枝獨秀、強調效率嗎？
+1. 是
+2. 否
+</p>
+<p>
+請問，MVC 是能夠快速上手的概念嗎？
+1. 是
+2. 否
+</p>
+</div>
+</div>
+<div class="separator"></div>
+<div class="block">
+<div class="block-header">
+<h2>何謂 MVC？</h2>
+</div>
+<div class="contents">
+<p>我不是第一次就學會這個設計架構，我也是寫了很多自己很難忍受，
+別人無法協作的程式碼，之後慢慢摸到思考方式的。
+我現在希望跟別人好好共識合作！😊</p>
+<p>MVC 是「Model、View、Controller」的縮寫，雖然在 Unity 不是很好用，
+但它如果我們明白怎麼使用這樣的思考模式，會幫助我們很多！
+1. View：視窗：負責顯示
+2. Model：模型：視窗需要顯示的資料
+3. Controller：控制器
+這是 ASP.NET (C# 後端架構) 的架構，我們可以看看範例程式：
+<code>// 這是名為 Home.cs 的檔案
+[Controller] [Route("api/[controller]")] // ~/api/[(controller=Home)]
+public class Home : Controller           // 連到上面的網址會 new() 這個類別
+{                                        //
+    [HttpGet] [Route("index")]           // ~/api/Home/index
+    public IActionResult Index()         // 連到上面的網址會觸發 Index()
+    {                                    //
+        return View();                   // 回傳 View(); 顯示視窗
+    }                                    //
+}                                        //
+</code>
+在 ASP.NET 裡面，是用 [] 來處理依賴的，
+1. 用 [Route] 告訴伺服器這是一段網址路線
+2. 用 [Controller] 告訴伺服器這是一個控制器
+3. 用 [HttpGet] 告訴伺服器這是一個 GET 請求
+
+View() 是用來顯示視窗的，這個視窗是由 Controller 控制的，
+他們的職權是分開的。
+加以擴充 Controller 是擴充邏輯，View 是擴充顯示，
+他們是這樣彼此分工的。
+以下是 View 的範例，看看就好：
+<code>// 這是名為 Home.cshtml 的檔案
+@model HomeViewModel
+@code{
+    private string paragraph = "歡迎來到首頁！";
+}
+    
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+&lt;h1&gt;@ViewData["Title"]&lt;/h1&gt;
+&lt;p&gt;@paragraph 你好！ @HomeViewModel.User&lt;/p&gt;
+</code>
+我們可以看到，這個 View 雖然是用 Razor 語法 (html 網頁 + C# 的語法)，
+但是 View 的職責是顯示資料，盡量不是去處理資料。 
+</p>
+<p class="keypoint">結論是說：
+MVC 就是用來分開：「邏輯、顯示、資料」的架構</p>
+</div>
+</div>
+<div class="separator"></div>
+<div class="block">
+<div class="block-header">
+<h2>Unity 的 MV : Main, View</h2><p class="note">是我自己的想法，但我覺得還不錯，跟你分享😊</p>
+</div>
+<div class="contents">
+<p class="keypoint">而在 Unity 裡面把顯示、邏輯拆開來是非常關鍵的！
+是為了分工與乾淨的流程！只需要切成 class View、class Main 就可以好好完成流程！
+</p>
+<p>以下示範一下，怎麼切分一個範例情境。
+1. 顯示首頁 
+2. 等待按鈕 (開始或設定)
+3. 開始 (切入下一個場景)
+<code>public class Main : MonoBehaviour
+{
+    [SerializeField] private TitleView    title;       // 首頁視窗
+    [SerializeField] private SettingsView settings;    // 設定視窗
+                                                       //
+    private async UniTask Start()                      //
+    {                                                  //
+        var r = (string)(await title.Show());          // 首頁裡面再負責看看按下的按鈕是誰
+        if (r == "start")                              //
+        {                                              //
+            await SceneManager.LoadSceneAsync("Game"); // 去到遊戲場景
+        }                                              //
+        else if (r == "settings")                      //
+        {                                              //
+            await title.Hide();                        // 先關掉首頁、等關掉首頁的動畫
+            await settings.Show();                     // 再打開設定、等玩家把它關閉
+            await settings.Hide();                     // 等關閉設定的動畫 
+            Start().Forget();                          //
+        }
+    }
+}    
+</code>
+從以上程式碼你不難發現，我們能一次讀完場景的流程，
+既使我們不知道裡面的細節、討論出來的結果。
+甚至，如果需要有人協助我們寫顯示的畫面，我們也可以輕鬆交付。
+以下完善一下 class TitleView 的部分，也是能夠被交付、分開處理的腳本：
+<code>public class TitleView : MonoBehaviour
+{
+    [SerializeField] private Button start;    // 開始按鈕
+    [SerializeField] private Button settings; // 設定按鈕
+    
+    public async UniTask&lt;object&gt; Show(object input = null) // 用 object 避免寫太多 Model 挺麻煩的
+    {                                                      //
+        var result = "";                                   // 設定回傳結果
+        var flag = true;                                   // 設定等待中的鏢旗 (flag 就是旗子)
+        start.onClick.RemoveAllListeners();                // 先移除以免一次加到很多個 Listener
+        start.onClick.AddListener(() =>                    //
+        {                                                  //
+            result = "start";                              // 設定回傳結果為 "start"
+            flag = false;                                  // 解除等待中的鏢旗 
+        });                                                //
+        settings.onClick.RemoveAllListeners();             // 先移除以免一次加到很多個 Listener
+        settings.onClick.AddListener(() =>                 //
+        {                                                  //
+            result = "settings";                           // 設定回傳結果為 "settings"
+            flag = false;                                  // 解除等待中的鏢旗
+        });                                                //
+                                                           //
+        await UniTask.WaitWhile(() => flag);               // 程式碼執行到這裡時會等待 flag 變成 false 為止
+        return result;                                     // 回傳結果
+    }                                                      
+}   
+</code>
+</p>
+</div>
+</div>
+</div>
+</body>
+<script src="colorize.mjs"></script>
+</html>

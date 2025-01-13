@@ -14,8 +14,11 @@
             /([a-zA-Z0-9]+)(?<!var)\(/g, 
             "<span style='color: var(--method)'>$1</span>("))
         .map((e, i) => e.replace(
-            / [/][/](.*)/g, 
-            "<span style='color: var(--comment)'> //$1</span>"))
+            /[/][/](.*)/g, 
+            "<span style='color: var(--comment)'>//$1</span>"))
+        .map((e, i) => e.replace(
+            /@([a-zA-Z]*)/g, 
+            "<span style='color: var(--razor)'>@$1</span>"))
         .reduce((a, b) => a + "\n" + b)
 }
 
