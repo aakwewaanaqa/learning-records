@@ -1,36 +1,53 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>階級制度的 MVC</title>
+    <title>一同合作的 MVC</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header class="block-header">
-<h1>階級制度的 MVC</h1>
+<h1>一同合作的 MVC</h1>
 <p class="note">MVC 是一個很重要的觀念，
-用來分開：「邏輯、顯示、資料」的架構，
-以利「更新、協作、測試」。</p>
+用來分開：「邏輯、顯示、資料」的架構。</p>
 </header>
 <div class="main">
 <div class="block">
 <div class="block-header">
-<h2>測試你的明白！</h2>
+<h2>快速理解試題</h2>
+<p class="note">試試看你的明白😊</p>
 </div>
 <div class="contents">
 <p>請問，MVC 是一個程式語言嗎？
 1. 是
 2. 否
 </p>
+<p class="answer">答案是 2. 否
+任何程式語言都可以應用 MVC 的設計模式，
+創造出容易一同合作的架構。
+</p>
 <p>    
-請問，MVC 的目的是為了一枝獨秀、強調效率嗎？
-1. 是
-2. 否
+請問，已知 MVC 的 V 是 View 代表視窗，
+View 是為了處理哪一種工作？
+1. 顯示
+2. 邏輯
+3. 資料
+</p>
+<p class="answer">答案是 1. 顯示
+顯示可以有一點點的資料邏輯沒問題，
+但還是讓大部分的顯示邏輯留給 C 是 Controller 的控制器
 </p>
 <p>
-請問，MVC 是能夠快速上手的概念嗎？
-1. 是
-2. 否
+請問，已知 MVC 是一種設計模，
+它是透過怎樣的模式上手最適切的呢？
+1. 看很多參考資料
+2. 多多思考與實作時練習
+3. 請 ChatGPT 幫助寫架構
+</p>
+<p class="answer">答案是 2. 多多思考與實作時練習
+設計模式的上手方式需要使用者慢慢思考，它不是一個硬式的規範與法律，
+不能透過複製與貼上理解其中的方便，而是需要親身經歷，
+雖然聽起來很困難，但卻可以透過思考越實作時，培養出自己的風格。
 </p>
 </div>
 </div>
@@ -40,11 +57,11 @@
 <h2>何謂 MVC？</h2>
 </div>
 <div class="contents">
-<p>我不是第一次就學會這個設計架構，我也是寫了很多自己很難忍受，
-別人無法協作的程式碼，之後慢慢摸到思考方式的。
-我現在希望跟別人好好共識合作！😊</p>
-<p>MVC 是「Model、View、Controller」的縮寫，雖然在 Unity 不是很好用，
-但它如果我們明白怎麼使用這樣的思考模式，會幫助我們很多！
+<p>設計模式是一種慢慢養成的設計方式，
+為了日後維護、程式碼好閱讀 (意思是之後回來還看得懂)
+願您慢慢思考得到其中的滋味，雖然思考會苦，但實作時卻是甘甜！😊</p>
+<p>MVC 是「 Model、View、Controller 」的縮寫，雖然在 Unity 不是很好實作，
+但它如果我們明白怎麼使用這樣的設計模式，會幫助我們很多！
 1. View：視窗：負責顯示
 2. Model：模型：視窗需要顯示的資料
 3. Controller：控制器
@@ -60,16 +77,15 @@ public class Home : Controller           // 連到上面的網址會 new() 這�
     }                                    //
 }                                        //
 </code>
-在 ASP.NET 裡面，是用 [] 來處理依賴的，
+在 ASP.NET 裡面，是用 [] 來處理依賴邏輯 (意思是檔案需要用到其他檔案的功能) 的，
 1. 用 [Route] 告訴伺服器這是一段網址路線
 2. 用 [Controller] 告訴伺服器這是一個控制器
 3. 用 [HttpGet] 告訴伺服器這是一個 GET 請求
 
-View() 是用來顯示視窗的，這個視窗是由 Controller 控制的，
-他們的職權是分開的。
-加以擴充 Controller 是擴充邏輯，View 是擴充顯示，
-他們是這樣彼此分工的。
-以下是 View 的範例，看看就好：
+View() 是用來顯示視窗的，這個視窗是由 Controller 控制開關的。
+加以擴充 Controller 是擴充邏輯，View() 是擴充顯示，
+他們是這樣彼此一同合作的。
+以下是實作 View() 的範例，看看就好：
 <code>// 這是名為 Home.cshtml 的檔案
 @model HomeViewModel
 @code{
@@ -84,10 +100,10 @@ View() 是用來顯示視窗的，這個視窗是由 Controller 控制的，
 &lt;p&gt;@paragraph 你好！ @HomeViewModel.User&lt;/p&gt;
 </code>
 我們可以看到，這個 View 雖然是用 Razor 語法 (html 網頁 + C# 的語法)，
-但是 View 的職責是顯示資料，盡量不是去處理資料。 
+但是 View 的工作是顯示資料，盡量不要去處理資料。
 </p>
 <p class="keypoint">結論是說：
-MVC 就是用來分開：「邏輯、顯示、資料」的架構</p>
+MVC 就是用來分開：「邏輯、顯示、資料」的設計模式</p>
 </div>
 </div>
 <div class="separator"></div>
@@ -161,5 +177,6 @@ MVC 就是用來分開：「邏輯、顯示、資料」的架構</p>
 </div>
 </div>
 </body>
+<script src="mark.mjs"></script>
 <script src="colorize.mjs"></script>
 </html>

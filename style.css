@@ -42,8 +42,9 @@ html, body {
     background-color: var(--main-bg-color);
     letter-spacing: 0.15em;
 
-    scrollbar-color: var(--added-normal) var(--added-subtile);
+    scrollbar-color: var(--added-normal) var(--main-bg-color);
     scrollbar-gutter: stable;
+    scrollbar-arrow-color: #0000;
 }
 
 p {
@@ -74,7 +75,7 @@ h2 {
 }
 
 code {
-    overflow-x: scroll;
+    overflow-x: auto;
     text-wrap: nowrap;
 
     font-family: var(--font-family);
@@ -87,9 +88,12 @@ code {
     display: block;
     border-radius: var(--round-edge);
     border-color: var(--added-subtile);
-    border-width: var(--line-width);
+    border-width: 0;
     border-style: solid;
     font-variant-ligatures: inherit;
+
+    scrollbar-color: var(--added-subtile) var(--minus-dark);
+    box-shadow: 0px 1px 10px var(--minus-dark);
 }
 
 a, a:visited {

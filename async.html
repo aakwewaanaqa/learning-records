@@ -2,14 +2,13 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>異步程式碼的時間魔術</title>
+    <title>異步的時間魔術</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header class="block-header">
-    <h1>異步程式碼的時間魔術</h1>
-    <p class="note">
-        因為時間差的關係，避免在函式之間跳來跳去撰寫，採用異步的撰寫方式會方便很多。</p>
+    <h1>異步的時間魔術</h1>
+    <p class="note">因為時間差的關係，避免在函式之間跳躍撰寫，採用異步的撰寫方式會方便很多。</p>
 </header>
 <div class="main">
     <div class="block">
@@ -44,8 +43,138 @@
 而 await 則是標準的 C# 等待後執行。
 又因為 Two() 中 Delay(500) 只有 0.5 秒鐘，
 所以比 One() 中 Delay(1000) 還要快執行。</p>
+<p>已知關鍵字 await 會使得 UniTask&lt;T&gt; 變成 T，
+請問執行完 Main()， one、two 分別會是什麼？
+1. void, UniTask
+2. UniTask, UniTask
+3. void, int
+4. UniTask, int
+<code>public class Example : Monobehaviour
+{
+    public async UniTask      One() {}
+    public async UniTask&lt;int&gt; Two() {}
+
+    public async UniTask Start()
+    {
+        var one = One();
+        var two = await Two();
+        await one;
+    }
+}
+</code></p><p class="answer">答案是 4. UniTask, int
+這是稍微有點疑惑的地方，One() 為啥可以直接執行？
+實際上 One() 寫法是對的，它只是先拿到 UniTask，在 Two() 之後再等而已。
+而 two 則是 Two() 被執行時，就馬上等到其完成再得到它的 int
+</p>
         </div>
     </div>
+    <div class="separator"></div>
+    <div class="block">
+        <div class="block-header">
+            <h2>異步不可怕</h2>
+        <p class="note">這裡先介紹基本語法，減少理解上的困難度。</p>
+        </div>
+        <div class="contents">
+            <p class="keypoint">異步可以說是有回傳值 (就是 return value) 的協程</p>
+            <p>異步構成的方式，是把函式的進行變成一種異步工作 (new Task())
+在 Unity 裡面我們很常用 UniTask，以及在 UniTask 前面加 async
+(sync 是同步的意思，async 加 a 就是不同步，或異步的意思)
+告訴編譯器 (就是電腦) 這是異步，我們寫的這個函式就會在執行時
+(new UniTask())，它會自己處理這個異步工作的等待之類的工作，
+不會卡住整個程式。以下示範一下基本語法：
+<code>public class Example : Monobehaviour
+{
+    public async UniTask Start()   //
+    {                              //
+        await UniTask.Delay(1000); // 等 1000 毫秒
+        Debug.Log("HERE")          //
+    }                              //
+}
+</code>
+如果需要可以被等，又需要有回傳值的話，可以使用 UniTask&lt;T&gt;
+T 是回傳值的類型，UniTask&lt;T&gt; 被 await 會得到 T。
+我們稱 UniTask&lt;T&gt; 得到 T 的這個行為叫做拆包 (unwrap / unbox)
+<code>public class Example : Monobehaviour
+{
+    public async UniTask Start()
+    {
+        Debug.Log("What is that?");    //
+        var animal = await Cat();      // 這裡面會等 Cat() 完成
+        Debug.Log("It's a {animal}."); //
+    }
+
+    public async UniTask&lt;string&gt; Cat() // 寫 &lt;string&gt; 回傳 string
+    {                                  //
+        await UniTask.Delay(1500);     // 等 1500 毫秒
+        return "Cat";                  // 回傳 "Cat"
+    }                                  //
+}
+</code></p>
+</div>
+</div>
+<div class="separator"></div>
+<div class="block">
+<div class="block-header"><h2>異步小技巧：等待特定項目</h2></div>
+<div class="contents"><p>等待播完音樂<code>public class Example : Monobehaviour
+{
+    [SerializeField] private AudioSource source;
+
+    public async UniTask PlayUntilFinish(AudioClip clip)
+    {
+        source.clip = clip;
+        source.Play();
+        await UniTask.WaitWhile(() => source.isPlaying);
+    }
+}
+        </code>
+等待使用者按下某一個按鈕<code>public class Example : Monobehaviour
+{
+    [SerializeField] private Button btn;
+
+    public async UniTask Show()
+    {
+        gameObject.SetActive(true);
+
+        var isWaiting = true;
+
+        btn.onClick.RemoveAllListeners();
+        btn.onClick.AddListener(() =>
+        {
+            isWaiting = false;
+        });
+
+        await UniTask.WaitWhile(() => isWaiting == true);
+    }
+}
+</code></p></div>
+    </div>
+<div class="separator"></div>
+<div class="block"><div class="block-header"><h2>異步小技巧：一起等、比誰先好</h2>
+</div><div class="contents"><p> UniTask.WhenAll() 意思是兩者都要完成
+<code>public class Example : Monobehaviour
+{
+    [SerializeField] private Image image;
+
+    private async UniTask Start()
+    {
+        // 等待動畫以及網路資料完成傳送
+        // 動畫播放時，可以賺到一點等待時間
+        // 讓使用者不會等太久
+        await UniTask.WhenAll(Fade(), GetUrl());
+    }
+
+    private async UniTask Fade()
+    {
+        var tween = image.DOFade(1f, 0.5f);
+        await tween.AsyncWaitForCompletion();
+    }
+
+    private async UniTask GetUrl()
+    {
+        await UnityWebRequest.Get("url").SendWebRequest();
+    }
+}
+</code></p></div></div>
 </div>
 <script src="colorize.mjs"></script>
 <script src="mark.mjs"></script>
