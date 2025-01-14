@@ -35,12 +35,15 @@ br {
     display: none;
 }
 
-body {
+html, body {
     font-family: var(--font-family);
     color: white;
     align-content: center;
     background-color: var(--main-bg-color);
     letter-spacing: 0.15em;
+
+    scrollbar-color: var(--added-normal) var(--added-subtile);
+    scrollbar-gutter: stable;
 }
 
 p {
@@ -71,6 +74,9 @@ h2 {
 }
 
 code {
+    overflow-x: scroll;
+    text-wrap: nowrap;
+
     font-family: var(--font-family);
     color: inherit;
     font-size: smaller;
