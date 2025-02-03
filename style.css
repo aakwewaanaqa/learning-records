@@ -47,6 +47,10 @@ html, body {
     scrollbar-arrow-color: #0000;
 }
 
+div {
+    white-space: discard;
+}
+
 p {
     color: var(--added-bright);
     padding-left: var(--padding);

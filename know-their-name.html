@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>$Title$</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!--標頭!-->
+<header class="block-header">
+    <h1>知道程式碼的部件稱呼方式</h1>
+    <p class="note">程式碼的部件有他們的名字，
+知道名字有助於溝通與 Google 搜尋</p>
+</header>
+<!--主體!-->
+<div class="main">
+    <!--區塊!-->
+    <div class="block">
+        <div class="block-header">
+            <h2>對照表</h2>
+        </div>
+        <div class="contents">
+            <p>
+                <code>public class Cat
+                {
+                    public string enName;
+                    public string zhName;
+
+                    public int CommonName
+                    {
+                        get
+                        {
+                            if (string.IsNullOrEmpty(enName)) return zhName;
+                            return enName;
+                        }
+                    }
+
+                    public int age { get; set; }
+                }
+                </code>
+            </p>
+        </div>
+    </div>
+    <!--區塊!-->
+</div>
+<!--主體!-->
+</body>
+</html>
