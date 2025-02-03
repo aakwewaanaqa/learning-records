@@ -60,47 +60,12 @@ View 是為了處理哪一種工作？
 <p>設計模式是一種慢慢養成的設計方式，
 為了日後維護、程式碼好閱讀 (意思是之後回來還看得懂)
 願您慢慢思考得到其中的滋味，雖然思考會苦，但實作時卻是甘甜！😊</p>
-<p>MVC 是「 Model、View、Controller 」的縮寫，雖然在 Unity 不是很好實作，
-但它如果我們明白怎麼使用這樣的設計模式，會幫助我們很多！
-1. View：視窗：負責顯示
-2. Model：模型：視窗需要顯示的資料
+<p>MVC 是「 Model、View、Controller 」的縮寫：
+1. View：視圖
+2. Model：模型資料
 3. Controller：控制器
-這是 ASP.NET (C# 後端架構) 的架構，我們可以看看範例程式：
-<code>// 這是名為 Home.cs 的檔案
-[Controller] [Route("api/[controller]")] // ~/api/[(controller=Home)]
-public class Home : Controller           // 連到上面的網址會 new() 這個類別
-{                                        //
-    [HttpGet] [Route("index")]           // ~/api/Home/index
-    public IActionResult Index()         // 連到上面的網址會觸發 Index()
-    {                                    //
-        return View();                   // 回傳 View(); 顯示視窗
-    }                                    //
-}                                        //
-</code>
-在 ASP.NET 裡面，是用 [] 來處理依賴邏輯 (意思是檔案需要用到其他檔案的功能) 的，
-1. 用 [Route] 告訴伺服器這是一段網址路線
-2. 用 [Controller] 告訴伺服器這是一個控制器
-3. 用 [HttpGet] 告訴伺服器這是一個 GET 請求
-
-View() 是用來顯示視窗的，這個視窗是由 Controller 控制開關的。
-加以擴充 Controller 是擴充邏輯，View() 是擴充顯示，
-他們是這樣彼此一同合作的。
-以下是實作 View() 的範例，看看就好：
-<code>// 這是名為 Home.cshtml 的檔案
-@model HomeViewModel
-@code{
-    private string paragraph = "歡迎來到首頁！";
-}
-    
-@{
-    ViewData["Title"] = "Home Page";
-}
-
-&lt;h1&gt;@ViewData["Title"]&lt;/h1&gt;
-&lt;p&gt;@paragraph 你好！ @HomeViewModel.User&lt;/p&gt;
-</code>
-我們可以看到，這個 View 雖然是用 Razor 語法 (html 網頁 + C# 的語法)，
-但是 View 的工作是顯示資料，盡量不要去處理資料。
+基本概念是控制器是一個控制顯示的類別，而視圖是一個顯示模型資料的類別。
+由控制器處理好、過濾好資料，再決掉要交給哪一個視圖去顯示。
 </p>
 <p class="keypoint">結論是說：
 MVC 就是用來分開：「邏輯、顯示、資料」的設計模式</p>
